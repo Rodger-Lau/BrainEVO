@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # BrainEVO: A brain inspired evolving deep learning architecture for cross-domain adaptation
 ## Python version
   python 3.11
@@ -37,7 +38,7 @@ For feature x,
     coor (coordinates)= x[..., 3:5]
     
     timestamp = x[..., 5:11], whose type is [year, month, date, hour, minute, second]
-    
+
 ## Training example
 First,
 
