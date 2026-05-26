@@ -237,7 +237,7 @@ for circle in range(second_stage_circle):
                             #print('增强')
                             if LTP_bool and saved:
                                 torch.save(common_model,f'./saved_models/LTP_pre_common_model_{args.dataset}.pth')
-                                print('发生LTP，保存pre_LTP,此时weight_decay=',weight_decay_common*1.2)
+                                
                                 LTP = True
                                 LTP_bool = False
                             weight_decay_common *= 1.2
@@ -248,7 +248,7 @@ for circle in range(second_stage_circle):
                             #print('削弱')
                             if LTD_bool and saved:
                                 torch.save(common_model,f'./saved_models/LTD_pre_common_model_{args.dataset}.pth')
-                                print('发生LTD，保存pre_LTD,此时weight_decay=',weight_decay_common*0.5)
+                                
                                 LTD = True
                                 LTD_bool = False
                             weight_decay_common /=1.2
