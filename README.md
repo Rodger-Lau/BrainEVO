@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # BrainEVO: A brain inspired evolving deep learning architecture for cross-domain adaptation
 ## Python version
   python 3.11
@@ -25,6 +24,18 @@ Traffic Crashes - Vehicles https://data.cityofchicago.org/Transportation/Traffic
 ### SD dataset
 
 https://github.com/liuxu77/LargeST/tree/main/data/sd
+
+### MUTAG dataset
+
+https://grlplus.github.io/papers/79.pdf
+
+### HIV dataset
+
+https://hf-mirror.com/datasets/OGB/ogbg-molhiv
+
+### BBBP dataset
+
+https://moleculenet.org/datasets-1
 
 ## Data description
 For feature x,   
