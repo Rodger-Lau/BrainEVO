@@ -21,7 +21,7 @@ def draw_curve(grad_norms,save_dir,key,circle,saved=True):
     plt.figure(figsize=(600,650))
     for name, norms in grad_norms.items():
         plt.plot(norms, label=name)
-    plt.yscale('log')
+    plt.yscale('log')  # 对数坐标更清晰
     plt.title("Gradient Norms per Layer")
     plt.legend()
     #plt.show()
@@ -40,9 +40,6 @@ else:
     tasks = ['FLOW','SPEED']
 #dataset_path = './data/data/CHI'
 dataset_path = os.path.join('./data/data',dataset_path)
-# adj_path = './data/data/chi_adj.npy'
-# adj_matrix = np.load(adj_path)
-#adj_matrix = torch.tensor(adj_matrix)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 #tasks = os.listdir(dataset_path)
 task_dirs = [os.path.join(dataset_path, item) for item in tasks]
@@ -59,7 +56,7 @@ scalers=[]
 batch_size = 32
 #saved = False
 # 划分tasks
-first_stage_num_epochs = 30
+first_stage_num_epochs = 3
 new_i = 1
 if args.dataset == 'NYC': new_i=3
 new_j = len(train_loaders[0])-1
@@ -205,8 +202,8 @@ for circle in range(second_stage_circle):
                 #d_max = sorted_gradients_list[-1]
                 #if not (i == min_i and j == min_j):
                 #p_common = my_sigmoid(-difference_value,circle+1)
-                p_common = my_sigmoid(p0, difference_value,d_max)
-                weight_decay_common = my_sigmoid(lambda0,difference_value,d_max)
+                p_common = my_sigmoid(p0, difference_value, d_max)
+                weight_decay_common = my_sigmoid(lambda0, difference_value, d_max)
                 # p_common = my_reverse(p0,difference_value)
                 # weight_decay_common = 0.1*my_reverse(p0,difference_value)
                 common_model.dropout = p_common
