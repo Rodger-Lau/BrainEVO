@@ -9,8 +9,10 @@ Demographic Data: https://data.cityofnewyork.us/City-Government/Demograp-hic-Sta
 
 Road Network: https://data.cityofnewyork.us/City-Government/NYC-Street-Centerline-CSCL-/
 
+The processed data can be found in https://drive.google.com/drive/folders/1OTMUKbQjfUOQNqXQ-MsUVy84sn5JCfda?usp=sharing
+
 ### SIP dataset
-Due to the privacy protocols between our department and SIP traffic administration offices, the statistics of traffic flows and speed values cannot be open source.
+The processed data can be found in https://drive.google.com/drive/folders/1jSaVS3b7Wm7qyA1C2B619eX_yA6zRBLF?usp=sharing
 
 ### Chicago dataset
 Taxi Trip Records https://data.cityofchicago.org/Transportation/Taxi-Trips-2013-2023-/wrvz-psew/about_data
@@ -20,6 +22,8 @@ Traffic Crashes - People https://data.cityofchicago.org/Transportation/Traffic-C
 Traffic Crashes - Crashes https://data.cityofchicago.org/Transportation/Traffic-Crashes-Crashes/85ca-t3if/about_data
 
 Traffic Crashes - Vehicles https://data.cityofchicago.org/Transportation/Traffic-Crashes-Vehicles/68nd-jvt3/about_data
+
+The processed data can be found in https://drive.google.com/drive/folders/17wv8R5H8o2NGBaSv59QZFxeFY2LlPDPU?usp=sharing
 
 ### SD dataset
 
@@ -37,24 +41,13 @@ https://hf-mirror.com/datasets/OGB/ogbg-molhiv
 
 https://moleculenet.org/datasets-1
 
-## Data description
-For feature x,   
-
-    batch_size = x.shape[0]
-    
-    tod (time of day) = x[..., 1]
-    
-    dow (day of week) = x[..., 2]
-    
-    coor (coordinates)= x[..., 3:5]
-    
-    timestamp = x[..., 5:11], whose type is [year, month, date, hour, minute, second]
 
 ## Training example
 First,
 
-  put the processed data (divided into train.npz, val.npz and test.npz, where npz file is in shape(num_samples, length, num_nodes, dim)) under ./data/data/{dataset name}, e.g., ./data/data/SIP
+  put the data under ./data/data/{dataset name}, e.g., ./data/data/SIP
 
-Then run the following command(take SIP as an example),
+Then run the following command(take SIP and BBBP as an example),
 
-    python main.py --dataset SIP
+    python main_ST.py --dataset SIP
+    python main_molecule.py --dataset BBBP
