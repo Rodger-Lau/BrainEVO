@@ -49,7 +49,7 @@ class gcn(nn.Module):
 class gwnet(nn.Module):
     def __init__(self, device, num_nodes, dropout=0.3, supports=None, gcn_bool=True, addaptadj=True, aptinit=None, in_dim=2,out_dim=12,residual_channels=32,dilation_channels=32,skip_channels=256,end_channels=512,kernel_size=2,blocks=4,layers=2,mode=0):
         super(gwnet, self).__init__()
-        #print(num_nodes)
+
         self.dropout = dropout
         self.blocks = blocks
         self.layers = layers
@@ -66,17 +66,7 @@ class gwnet(nn.Module):
         self.start_conv = nn.Conv2d(in_channels=in_dim,
                                     out_channels=residual_channels,
                                     kernel_size=(1,1))
-        self.supports = supports  # supports = [torch.tensor(i).to(device) for i in adj_mx]
-        '''
-            if args.randomadj:
-                adjinit = None
-            else:
-                adjinit = supports[0]
-
-            if args.aptonly:
-                supports = None
-        '''
-
+        self.supports = supports
         receptive_field = 1
 
         self.supports_len = 0
@@ -99,15 +89,11 @@ class gwnet(nn.Module):
                 self.nodevec1 = nn.Parameter(initemb1, requires_grad=True).to(device)
                 self.nodevec2 = nn.Parameter(initemb2, requires_grad=True).to(device)
                 self.supports_len += 1
-
-
-
-
         for b in range(blocks):
             additional_scope = kernel_size - 1
             new_dilation = 1
             for i in range(layers):
-                # dilated convolutions
+
                 self.filter_convs.append(nn.Conv2d(in_channels=residual_channels,
                                                    out_channels=dilation_channels,
                                                    kernel_size=(1,kernel_size),dilation=new_dilation))
@@ -116,12 +102,12 @@ class gwnet(nn.Module):
                                                  out_channels=dilation_channels,
                                                  kernel_size=(1, kernel_size), dilation=new_dilation))
 
-                # 1x1 convolution for residual connection
+
                 self.residual_convs.append(nn.Conv2d(in_channels=dilation_channels,
                                                      out_channels=residual_channels,
                                                      kernel_size=(1, 1)))
 
-                # 1x1 convolution for skip connection
+
                 self.skip_convs.append(nn.Conv2d(in_channels=dilation_channels,
                                                  out_channels=skip_channels,
                                                  kernel_size=(1, 1)))
@@ -131,9 +117,6 @@ class gwnet(nn.Module):
                 additional_scope *= 2
                 if self.gcn_bool:
                     self.gconv.append(gcn(dilation_channels,residual_channels,dropout,support_len=self.supports_len))
-
-
-
         self.end_conv_1 = nn.Conv2d(in_channels=skip_channels,
                                   out_channels=end_channels,
                                   kernel_size=(1,1),
@@ -150,54 +133,35 @@ class gwnet(nn.Module):
                                     bias=True)
 
         self.receptive_field = receptive_field
-
-
-
     def forward(self, input):
         count = 0
         self.nn_dropout = nn.Dropout(p=self.dropout)
         in_len = input.size(3)
-        #print('in_len:',in_len)  # 13
-        #print('receptive_field',self.receptive_field)  # 13
+
+
         if in_len<self.receptive_field:
             x = nn.functional.pad(input,(self.receptive_field-in_len,0,0,0))
         else:
             x = input
         x = self.start_conv(x)
-        #print('after start_conv_x:',x.shape)  # torch.Size([32, 32, 220, 13])
+
         skip = 0
 
-        # calculate the current adaptive adj matrix once per iteration
+
         new_supports = None
         if self.gcn_bool and self.addaptadj and self.supports is not None:
             adp = F.softmax(F.relu(torch.mm(self.nodevec1, self.nodevec2)), dim=1)
             new_supports = self.supports + [adp]
 
-        # WaveNet layers
+
         for i in range(self.blocks * self.layers):
-
-            #            |----------------------------------------|     *residual*
-            #            |                                        |
-            #            |    |-- conv -- tanh --|                |
-            # -> dilate -|----|                  * ----|-- 1x1 -- + -->	*input*
-            #                 |-- conv -- sigm --|     |
-            #                                         1x1
-            #                                          |
-            # ---------------------------------------> + ------------->	*skip*
-
-            #(dilation, init_dilation) = self.dilations[i]
-
-            #residual = dilation_func(x, dilation, init_dilation, i)
             residual = x
-            # dilated convolution
+
             filter = self.filter_convs[i](residual)
             filter = torch.tanh(filter)
             gate = self.gate_convs[i](residual)
             gate = torch.sigmoid(gate)
             x = filter * gate
-
-            # parametrized skip connection
-
             s = x
             s = self.skip_convs[i](s)
             try:
@@ -230,15 +194,4 @@ class gwnet(nn.Module):
 
         x1 = self.nn_dropout(x1)
         x1 = self.end_conv_2(x1)
-        # x = x.transpose(1,3)
-        # x = self.end_conv_3(x)
-        # x = x.transpose(1,3)
-        # print('x.shape:',x.shape)
-        # print('x1.shape:',x1.shape)
-        return x, x1, activate_num  # x代表表征，x1代表完整预测值
-
-
-
-
-
-
+        return x, x1, activate_num

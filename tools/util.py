@@ -70,12 +70,7 @@ def get_G_store(personal_extractor,train_loaders):
     return G_store
 class DataLoader(object):
     def __init__(self, xs, ys, batch_size, pad_with_last_sample=True):
-        """
-        :param xs:
-        :param ys:
-        :param batch_size:
-        :param pad_with_last_sample: pad with the last sample to make number of samples divisible to batch_size.
-        """
+        pass
         self.batch_size = batch_size
         self.current_ind = 0
         if pad_with_last_sample:
@@ -110,10 +105,7 @@ class DataLoader(object):
         return _wrapper()
 
 class StandardScaler():
-    """
-    Standard the input
-    """
-
+    pass
     def __init__(self, mean, std):
         self.mean = mean
         self.std = std
@@ -123,11 +115,8 @@ class StandardScaler():
 
     def inverse_transform(self, data):
         return (data * self.std) + self.mean
-
-
-
 def sym_adj(adj):
-    """Symmetrically normalize adjacency matrix."""
+    pass
     adj = sp.coo_matrix(adj)
     rowsum = np.array(adj.sum(1))
     d_inv_sqrt = np.power(rowsum, -0.5).flatten()
@@ -144,12 +133,7 @@ def asym_adj(adj):
     return d_mat.dot(adj).astype(np.float32).todense()
 
 def calculate_normalized_laplacian(adj):
-    """
-    # L = D^-1/2 (D-A) D^-1/2 = I - D^-1/2 A D^-1/2
-    # D = diag(A 1)
-    :param adj:
-    :return:
-    """
+    pass
     adj = sp.coo_matrix(adj)
     d = np.array(adj.sum(1))
     d_inv_sqrt = np.power(d, -0.5).flatten()
@@ -184,7 +168,7 @@ def load_pickle(pickle_file):
     return pickle_data
 
 def load_adj(pkl_filename, adjtype):
-    #sensor_ids, sensor_id_to_ind, adj_mx = load_pickle(pkl_filename)
+
     adj_mx = np.load(pkl_filename)
     if adjtype == "scalap":
         adj = [calculate_scaled_laplacian(adj_mx)]
@@ -201,7 +185,7 @@ def load_adj(pkl_filename, adjtype):
     else:
         error = 0
         assert error, "adj type not defined"
-    #return sensor_ids, sensor_id_to_ind, adj
+
     return adj
 
 
@@ -212,7 +196,7 @@ def load_dataset(dataset_dir, batch_size, valid_batch_size= None, test_batch_siz
         data['x_' + category] = cat_data['x']
         data['y_' + category] = cat_data['y']
     scaler = StandardScaler(mean=data['x_train'][..., 0].mean(), std=data['x_train'][..., 0].std())
-    # Data format
+
     for category in ['train', 'val', 'test']:
         data['x_' + category][..., 0] = scaler.transform(data['x_' + category][..., 0])
     data['train_loader'] = DataLoader(data['x_train'], data['y_train'], batch_size)
@@ -278,54 +262,46 @@ def choose_sublist(sorted_gradients_list, ratio):
 
     n = len(sorted_gradients_list)
     k = max(1, int(n * ratio))  
-    mask = set(random.sample(range(n), k))  # 随机索引集合
+    mask = set(random.sample(range(n), k))
     return [x for i, x in enumerate(sorted_gradients_list) if i in mask]
 
 import numpy as np
 from itertools import permutations
 
 def find_path(cluster_grad):
-    """
-    找到一条穿过所有cluster向量的最短路径（开放路径，起点为范数最小的向量）
-    
-    参数:
-        cluster_grad: dict, {cluster_id: vector}
-                      例如 {0: [0,1], 1: [1,0], 2: [1,1]}
-    返回:
-        list, 有序的cluster编号列表，表示最短访问顺序（起点为范数最小的cluster）
-    """
+    pass
     cluster_ids = list(cluster_grad.keys())
     n = len(cluster_ids)
     
     if n <= 1:
         return cluster_ids
     
-    # 将向量转为numpy数组
+
     vectors = {cid: np.array(cluster_grad[cid], dtype=float) for cid in cluster_ids}
     
-    # 预计算距离矩阵
+
     dist_matrix = {}
     for i in cluster_ids:
         for j in cluster_ids:
             if i != j:
                 dist_matrix[(i, j)] = np.linalg.norm(vectors[i] - vectors[j])
     
-    # ★ 找到范数最小的cluster，固定为起点
+
     start = min(cluster_ids, key=lambda cid: np.linalg.norm(vectors[cid]))
     
-    # 剩余需要排列的节点
+
     remaining = [cid for cid in cluster_ids if cid != start]
     
     if n <= 11:
-        # -------- 精确解：起点固定，只枚举剩余 (n-1)! 种排列 --------
+
         return _find_path_exact(start, remaining, dist_matrix)
     else:
-        # -------- 启发式解：最近邻贪心（强制从start出发） --------
+
         return _find_path_nearest_neighbor(start, cluster_ids, dist_matrix)
 
 
 def _path_total_distance(path, dist_matrix):
-    """计算一条路径的总距离"""
+    pass
     total = 0.0
     for i in range(len(path) - 1):
         total += dist_matrix[(path[i], path[i+1])]
@@ -333,7 +309,7 @@ def _path_total_distance(path, dist_matrix):
 
 
 def _find_path_exact(start, remaining, dist_matrix):
-    """起点固定，暴力枚举剩余节点的排列"""
+    pass
     best_path = None
     best_dist = float('inf')
     
@@ -348,7 +324,7 @@ def _find_path_exact(start, remaining, dist_matrix):
 
 
 def _find_path_nearest_neighbor(start, cluster_ids, dist_matrix):
-    """最近邻贪心，强制从start出发"""
+    pass
     path = [start]
     visited = {start}
     
