@@ -51,3 +51,5 @@ Then run the following command(take SIP and BBBP as an example),
 
     python main_ST.py --dataset SIP
     python main_molecule.py --dataset BBBP
+
+The implementation of baselines mentioned in revisions can be found in baseline_*.py
